@@ -189,7 +189,7 @@ class ZonePicking(Component, ChangePackLotMixin):
             picking_type = self.env["stock.picking.type"].browse(datum["id"])
             zone_lines = self._picking_type_zone_lines(zone_location, picking_type)
             priority_lines = zone_lines.filtered(
-                lambda line: line.priority in ["2", "3"]
+                lambda line: line.picking_id.priority in ["2", "3"]
             )
 
             datum.update(
