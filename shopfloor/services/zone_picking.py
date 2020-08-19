@@ -187,61 +187,29 @@ class ZonePicking(Component, ChangePackLotMixin):
         }
         for datum in data["picking_types"]:
             picking_type = self.env["stock.picking.type"].browse(datum["id"])
+            zone_lines = self._picking_type_zone_lines(zone_location, picking_type)
+            priority_lines = zone_lines.filtered(
+                lambda line: line.priority in ["2", "3"]
+            )
+
             datum.update(
                 {
-                    "lines_count": self._picking_type_lines_count(
-                        zone_location, picking_type
-                    ),
-                    "picking_count": self._picking_type_picking_count(
-                        zone_location, picking_type
-                    ),
-                    "priority_lines_count": self._picking_type_priority_lines_count(
-                        zone_location, picking_type
-                    ),
-                    "priority_picking_count": self._picking_type_priority_picking_count(
-                        zone_location, picking_type
-                    ),
+                    "lines_count": len(zone_lines),
+                    "picking_count": len(zone_lines.mapped("picking_id")),
+                    "priority_lines_count": len(priority_lines),
+                    "priority_picking_count": len(priority_lines.mapped("picking_id")),
                 }
             )
         return data
 
-    def _picking_type_lines_count(self, zone_location, picking_type):
-        return self.env["stock.move.line"].search_count(
+    def _picking_type_zone_lines(self, zone_location, picking_type):
+        return self.env["stock.move.line"].search(
             [
                 ("location_id", "=", zone_location.id),
+                # we have auto_join on picking_id
                 ("picking_id.picking_type_id", "=", picking_type.id),
                 ("qty_done", "=", 0),
                 ("state", "in", ("assigned", "partially_available")),
-            ]
-        )
-
-    def _picking_type_priority_lines_count(self, zone_location, picking_type):
-        return self.env["stock.move.line"].search_count(
-            [
-                ("location_id", "=", zone_location.id),
-                ("picking_id.picking_type_id", "=", picking_type.id),
-                ("qty_done", "=", 0),
-                ("state", "in", ("assigned", "partially_available")),
-                ("picking_id.priority", "in", ["2", "3"]),
-            ]
-        )
-
-    def _picking_type_picking_count(self, zone_location, picking_type):
-        return self.env["stock.picking"].search_count(
-            [
-                ("move_line_ids.location_id", "=", zone_location.id),
-                ("picking_type_id", "=", picking_type.id),
-                ("state", "not in", ("cancel", "done")),
-            ]
-        )
-
-    def _picking_type_priority_picking_count(self, zone_location, picking_type):
-        return self.env["stock.picking"].search_count(
-            [
-                ("move_line_ids.location_id", "=", zone_location.id),
-                ("picking_type_id", "=", picking_type.id),
-                ("state", "not in", ("cancel", "done")),
-                ("priority", "in", ["2", "3"]),
             ]
         )
 

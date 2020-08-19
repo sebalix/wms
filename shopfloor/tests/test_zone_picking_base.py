@@ -168,7 +168,6 @@ class ZonePickingCommonCase(CommonCase):
     def _assert_response_select_picking_type(
         self, state, response, zone_location, picking_types, message=None
     ):
-        __import__("pdb").set_trace()
         data = self.service._data_for_select_picking_type(zone_location, picking_types)
         self.assert_response(
             response, next_state=state, data=data, message=message,
