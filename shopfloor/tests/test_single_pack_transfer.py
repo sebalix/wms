@@ -787,8 +787,7 @@ class SinglePackTransferCase(CommonCase):
         picking = move.picking_id
 
         # someone cancel the work started by our operator
-        # FIXME: '_sf_no_backorder' was not passed in the context, is it expected?
-        move.with_context(_sf_send_confirmation_email=True)._action_done()
+        move._action_done()
 
         # now, call the service to cancel
         response = self.service.dispatch(

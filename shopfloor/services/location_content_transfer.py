@@ -570,9 +570,7 @@ class LocationContentTransfer(Component):
             # split the move to process only the lines related to the package.
             package_move.split_other_move_lines(package_move_lines)
         self._write_destination_on_lines(package_level.move_line_ids, scanned_location)
-        package_moves.with_context(
-            _sf_no_backorder=True, _sf_send_confirmation_email=True
-        )._action_done()
+        package_moves.with_context(_sf_no_backorder=True)._action_done()
         move_lines = self._find_transfer_move_lines(location)
         message = self.msg_store.location_content_transfer_item_complete(
             scanned_location
@@ -647,9 +645,7 @@ class LocationContentTransfer(Component):
                 remaining_move_line.qty_done = remaining_move_line.product_uom_qty
         move_line.move_id.split_other_move_lines(move_line)
         self._write_destination_on_lines(move_line, scanned_location)
-        move_line.move_id.with_context(
-            _sf_no_backorder=True, _sf_send_confirmation_email=True
-        )._action_done()
+        move_line.move_id.with_context(_sf_no_backorder=True)._action_done()
         move_lines = self._find_transfer_move_lines(location)
         message = self.msg_store.location_content_transfer_item_complete(
             scanned_location

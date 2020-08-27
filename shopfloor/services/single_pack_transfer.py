@@ -207,8 +207,7 @@ class SinglePackTransfer(Component):
         # when writing the destination on the package level, it writes
         # on the move lines
         move.move_line_ids.package_level_id.location_dest_id = scanned_location
-        # FIXME: '_sf_no_backorder' was not passed in the context, is it expected?
-        move.with_context(_sf_send_confirmation_email=True)._action_done()
+        move._action_done()
 
     def cancel(self, package_level_id):
         package_level = self.env["stock.package_level"].browse(package_level_id)
