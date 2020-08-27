@@ -31,7 +31,7 @@ class StockMove(models.Model):
         # the 'stock.picking.action_done()' method but never when moves are
         # validated partially through the current method.
         moves = super()._action_done(cancel_backorder)
-        if self.env.context.get("_sf_send_confirmation_email"):
+        if not self.env.context.get("_action_done_from_picking"):
             pickings = moves.picking_id
             for picking in pickings:
                 if picking.state == "done":
