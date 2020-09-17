@@ -68,10 +68,13 @@ class StockMove(models.Model):
                     )
                     % (picking.id, picking.name)
                 )
-            moves_todo.write({"picking_id": new_picking.id})
-            moves_todo.mapped("package_level_id").write({"picking_id": new_picking.id})
-            moves_todo.mapped("move_line_ids").write({"picking_id": new_picking.id})
-            new_picking.action_assign()
-            assert new_picking.state == "assigned"
+                moves_todo.write({"picking_id": new_picking.id})
+                moves_todo.package_level_id.write({"picking_id": new_picking.id})
+                moves_todo.move_line_ids.write({"picking_id": new_picking.id})
+                moves_todo.move_line_ids.package_level_id.write(
+                    {"picking_id": new_picking.id}
+                )
+                new_picking.action_assign()
+                assert new_picking.state == "assigned"
             new_picking.action_done()
         return True
