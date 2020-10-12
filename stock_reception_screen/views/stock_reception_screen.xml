@@ -241,6 +241,7 @@
                                     >
                                         <tree>
                                             <field name="display_name" />
+                                            <field name="storage_type_name" />
                                             <field name="qty" />
                                         </tree>
                                     </field>
