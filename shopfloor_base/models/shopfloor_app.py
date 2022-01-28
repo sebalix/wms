@@ -160,14 +160,16 @@ class ShopfloorApp(models.Model):
     def _register_hook(self):
         super()._register_hook()
         for rec in self.search([]):
-            rec._register_endpoints()
+            rec._register_endpoints(init=True)
 
-    def _register_endpoints(self):
+    def _register_endpoints(self, init=False):
         services = self._get_services()
         for service in services:
             self._prepare_non_decorated_endpoints(service)
             self._generate_endpoints(service)
         self.env["rest.service.registration"]._register_rest_route(self.api_route)
+        if not init:
+            self.env["endpoint.route.handler"]._reload_http_workers()
 
     def _unregister_endpoints(self):
         registry = self.env["endpoint.route.handler"]._endpoint_registry
