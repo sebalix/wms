@@ -513,9 +513,15 @@ class ZonePicking(Component):
         message = None
         response = None
         search = self._actions_for("search")
+        packaging = self._actions_for("packaging")
         package = search.package_from_scan(barcode)
         if not package:
             return response, message
+        message = packaging.package_has_several_products(
+            package
+        ) or packaging.package_has_several_lots(package)
+        if message:
+            return self.list_move_lines(), message
         move_lines = self._find_location_move_lines(package=package)
         if move_lines:
             response = self._response_for_set_line_destination(first(move_lines))
